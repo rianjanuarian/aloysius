@@ -1,14 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:flutter_blue/flutter_blue.dart';
 import 'package:starxpand/starxpand.dart';
 
-
 class HomePage extends StatelessWidget {
-     final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
 
   HomePage({super.key});
 
-  // Method untuk menampilkan Snackbar
   void showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -17,10 +18,20 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Method untuk membuka cash register
-  void openCashRegister(BuildContext context) async {
+   void openCashRegister(BuildContext context) async {
     try {
-      // Temukan printer
+
+         final bluetooth = FlutterBlue.instance;
+
+      if (!await bluetooth.isAvailable) {
+        showSnackbar(context, "Bluetooth tidak tersedia.");
+        return;
+      }
+
+      if (!await bluetooth.isOn) {
+        showSnackbar(context, "Bluetooth tidak diaktifkan. Aktifkan bluetooth terlebih dahulu dan hubungkan printer");
+        return;
+      }
       final printers = await StarXpand.findPrinters(
         interfaces: const [
           StarXpandInterface.usb,
@@ -30,34 +41,45 @@ class HomePage extends StatelessWidget {
         ],
         timeout: 3000,
         callback: (foundPrinter) {
-          // Callback ketika printer ditemukan
+       
              showSnackbar(context, "Printer ditemukan: $foundPrinter");
         },
       );
 
-      // Pastikan ada printer yang ditemukan
+
       if (printers.isEmpty) {
         showSnackbar(context,"Tidak ada printer yang ditemukan.");
         return;
       }
 
-      // Pilih printer pertama yang ditemukan
+   
       final selectedPrinter = printers[0];
 
-      // Buka cash register
+      
       await StarXpand.openDrawer(selectedPrinter);
 
       showSnackbar(context,"Cash register berhasil dibuka.");
     } catch (e) {
-      // Tangani kesalahan jika terjadi
+      
       showSnackbar(context,"Error: $e");
     }
   }
 
-  // Method untuk mencetak struk
   void printStruk(BuildContext context) async {
     try {
-      // Temukan printer
+      final bluetooth = FlutterBlue.instance;
+
+  
+      if (!await bluetooth.isAvailable) {
+        showSnackbar(context, "Bluetooth tidak tersedia.");
+        return;
+      }
+
+      if (!await bluetooth.isOn) {
+        showSnackbar(context, "Bluetooth tidak diaktifkan. Aktifkan bluetooth terlebih dahulu dan hubungkan printer");
+        return;
+      }
+
       final printers = await StarXpand.findPrinters(
         interfaces: const [
           StarXpandInterface.usb,
@@ -67,21 +89,17 @@ class HomePage extends StatelessWidget {
         ],
         timeout: 3000,
         callback: (foundPrinter) {
-          // Callback ketika printer ditemukan
-             showSnackbar(context, "Printer ditemukan: $foundPrinter");
+          showSnackbar(context, "Printer ditemukan: $foundPrinter");
         },
       );
 
-      // Pastikan ada printer yang ditemukan
       if (printers.isEmpty) {
-        showSnackbar(context,"Tidak ada printer yang ditemukan.");
+        showSnackbar(context, "Tidak ada printer yang ditemukan.");
         return;
       }
 
-      // Pilih printer pertama yang ditemukan
       final selectedPrinter = printers[0];
 
-      // Buat dokumen struk
       final doc = StarXpandDocument();
 
       final printDoc = StarXpandDocumentPrint();
@@ -93,41 +111,42 @@ class HomePage extends StatelessWidget {
       printDoc.actionPrintText("---------------------------\n");
       printDoc.actionPrintText("Total:\t\t\$20.00\n");
 
-      // Cetak struk
       await StarXpand.printDocument(selectedPrinter, doc);
 
-      showSnackbar(context,"Struk berhasil dicetak.");
+      showSnackbar(context, "Struk berhasil dicetak.");
     } catch (e) {
-      // Tangani kesalahan jika terjadi
-      showSnackbar(context,"Error: $e");
+      showSnackbar(context, "Error: $e");
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return 
-   
-   Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.amber,
-          title: Text("POS"),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blue,
+        title: const Text(
+          "POS",
+          style: TextStyle(fontWeight: FontWeight.w700),
         ),
-        body: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(onPressed: () {
-                printStruk(context);
-              }, child: Text("print")),
-              SizedBox(width: 20),
-              ElevatedButton(
-                  onPressed: () { openCashRegister(context);}, child: Text("open cash register"))
-            ],
-          ),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+                onPressed: () {
+                  printStruk(context);
+                },
+                child: const Text("Print Struk")),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  openCashRegister(context);
+                },
+                child: const Text("Buka Cash Register"))
+          ],
         ),
-      
+      ),
     );
   }
-  
 }
