@@ -18,10 +18,9 @@ class HomePage extends StatelessWidget {
     );
   }
 
-   void openCashRegister(BuildContext context) async {
+  void openCashRegister(BuildContext context) async {
     try {
-
-         final bluetooth = FlutterBlue.instance;
+      final bluetooth = FlutterBlue.instance;
 
       if (!await bluetooth.isAvailable) {
         showSnackbar(context, "Bluetooth tidak tersedia.");
@@ -29,7 +28,8 @@ class HomePage extends StatelessWidget {
       }
 
       if (!await bluetooth.isOn) {
-        showSnackbar(context, "Bluetooth tidak diaktifkan. Aktifkan bluetooth terlebih dahulu dan hubungkan printer");
+        showSnackbar(context,
+            "Bluetooth tidak diaktifkan. Aktifkan bluetooth terlebih dahulu dan hubungkan printer");
         return;
       }
       final printers = await StarXpand.findPrinters(
@@ -41,27 +41,22 @@ class HomePage extends StatelessWidget {
         ],
         timeout: 3000,
         callback: (foundPrinter) {
-       
-             showSnackbar(context, "Printer ditemukan: $foundPrinter");
+          showSnackbar(context, "Printer ditemukan: $foundPrinter");
         },
       );
 
-
       if (printers.isEmpty) {
-        showSnackbar(context,"Tidak ada printer yang ditemukan.");
+        showSnackbar(context, "Tidak ada printer yang ditemukan.");
         return;
       }
 
-   
       final selectedPrinter = printers[0];
 
-      
       await StarXpand.openDrawer(selectedPrinter);
 
-      showSnackbar(context,"Cash register berhasil dibuka.");
+      showSnackbar(context, "Cash register berhasil dibuka.");
     } catch (e) {
-      
-      showSnackbar(context,"Error: $e");
+      showSnackbar(context, "Error: $e");
     }
   }
 
@@ -69,14 +64,14 @@ class HomePage extends StatelessWidget {
     try {
       final bluetooth = FlutterBlue.instance;
 
-  
       if (!await bluetooth.isAvailable) {
         showSnackbar(context, "Bluetooth tidak tersedia.");
         return;
       }
 
       if (!await bluetooth.isOn) {
-        showSnackbar(context, "Bluetooth tidak diaktifkan. Aktifkan bluetooth terlebih dahulu dan hubungkan printer");
+        showSnackbar(context,
+            "Bluetooth tidak diaktifkan. Aktifkan bluetooth terlebih dahulu dan hubungkan printer");
         return;
       }
 
@@ -110,7 +105,8 @@ class HomePage extends StatelessWidget {
       printDoc.actionPrintText("Pasir\t\t\$15.00\n");
       printDoc.actionPrintText("---------------------------\n");
       printDoc.actionPrintText("Total:\t\t\$20.00\n");
-
+      
+      doc.addPrint(printDoc);
       await StarXpand.printDocument(selectedPrinter, doc);
 
       showSnackbar(context, "Struk berhasil dicetak.");
