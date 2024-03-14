@@ -152,11 +152,11 @@ class _HomePageState extends State<HomePage> {
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => ThermalPage(),
+                      builder: (context) => const ThermalPage(),
                     ),
                   );
                 },
-                child: Text("Thermal Printer Page"))
+                child: const Text("Thermal Printer Page"))
           ],
         ),
       ),

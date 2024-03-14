@@ -51,19 +51,25 @@ class _MyWidgetState extends State<ThermalPage> {
                 });
               },
               value: selectedDevices,
-              hint: Text("Pilih thermal printer"),
+              hint: const Text("Pilih thermal printer"),
             ),
             const SizedBox(height: 10),
             ElevatedButton(
                 onPressed: () {
                   printer.connect(selectedDevices!);
                 },
-                child: Text("Connect")),
+                child: const Text("Connect")),
+            const SizedBox(
+              height: 10,
+            ),
             ElevatedButton(
                 onPressed: () {
                   printer.disconnect();
                 },
-                child: Text("Disconnect")),
+                child: const Text("Disconnect")),
+            const SizedBox(
+              height: 10,
+            ),
             ElevatedButton(
                 onPressed: () async {
                   if ((await printer.isConnected)!) {
@@ -72,9 +78,10 @@ class _MyWidgetState extends State<ThermalPage> {
                     printer.printQRcode("TEST QR", 200, 200, 1);
                     printer.printCustom("Jl. Bungur No. 123", 0, 1);
                     printer.printCustom("---------------------------", 0, 1);
-                    printer.printCustom("Keramik\t\t\$5.00\n", 0, 1);
-                    printer.printCustom("Pasir\t\t\$15.00", 0, 1);
+                    printer.printCustom("Keramik\t\t\$5.00", 0, 1);
+                    printer.printCustom("Pasir\t\t\$15.00\n", 0, 1);
                     printer.printCustom("Total:\t\t\$20.00\n", 0, 1);
+                    printer.printNewLine();
                   }
                 },
                 child: const Text("Print thermal printer")),
