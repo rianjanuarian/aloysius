@@ -2,13 +2,20 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:pos/ThermalPage.dart';
+
 import 'package:starxpand/starxpand.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
       GlobalKey<ScaffoldMessengerState>();
-
-  HomePage({super.key});
 
   void showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -105,7 +112,7 @@ class HomePage extends StatelessWidget {
       printDoc.actionPrintText("Pasir\t\t\$15.00\n");
       printDoc.actionPrintText("---------------------------\n");
       printDoc.actionPrintText("Total:\t\t\$20.00\n");
-      
+
       doc.addPrint(printDoc);
       await StarXpand.printDocument(selectedPrinter, doc);
 
@@ -139,7 +146,17 @@ class HomePage extends StatelessWidget {
                 onPressed: () {
                   openCashRegister(context);
                 },
-                child: const Text("Buka Cash Register"))
+                child: const Text("Buka Cash Register")),
+            const SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => ThermalPage(),
+                    ),
+                  );
+                },
+                child: Text("Thermal Printer Page"))
           ],
         ),
       ),
